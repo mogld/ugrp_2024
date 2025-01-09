@@ -64,5 +64,11 @@ def preprocess_data(data):
         print("모든 결측치 처리 완료!")
 
     print("전처리 완료: 데이터 셋 크기 ->", data.shape)
+
+    # 주요 질환 타겟 변수 추가
+    data['Hypertension'] = (data['BP _Systolic (mmHg)'] > 140).astype(int)
+    data['Diabetes'] = (data['RBS(mg/dl)'] > 126).astype(int)
+
     return data
+
 
