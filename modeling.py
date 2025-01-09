@@ -1,11 +1,19 @@
 from sklearn.model_selection import GridSearchCV
 from xgboost import XGBClassifier
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, roc_auc_score
 from tuning import tune_hyperparameters
 from results_saver import save_results
+
+def cross_validate_model(model, X, y, cv=5):
+    """
+    교차 검증을 통해 모델의 평균 성능을 평가합니다.
+    """
+    scores = cross_val_score(model, X, y, cv=cv, scoring='accuracy')
+    print(f"Cross-validation scores: {scores}")
+    print(f"Mean accuracy: {scores.mean():.4f}")
 
 def train_and_evaluate_model(data):
     """
