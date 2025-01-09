@@ -4,13 +4,16 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, roc_auc_score
+from tuning import tune_hyperparameters
+from results_saver import save_results
 
 def train_and_evaluate_model(data):
     """
     모델 훈련 및 평가
     """
     # 독립 변수(X)와 종속 변수(y) 분리
-    selected_features = [' Age (yrs)', 'BMI', 'AMH(ng/mL)', 'FSH(mIU/mL)', 'LH(mIU/mL)', 'RBS(mg/dl)', 'TSH (mIU/L)', 'PCOS (Y/N)']
+    selected_features = ['Age (yrs)', 'BMI', 'AMH(ng/mL)', 'FSH(mIU/mL)', 'LH(mIU/mL)', 'RBS(mg/dl)', 'TSH (mIU/L)', 'PCOS (Y/N)',  'Life_Stage_Early_Reproductive', 'Life_Stage_Mid_Reproductive',
+    'Life_Stage_Late_Reproductive', 'Life_Stage_Menopause']
     if not all(feature in data.columns for feature in selected_features):
         missing_features = [feature for feature in selected_features if feature not in data.columns]
         raise ValueError(f"The following required features are missing in the dataset: {missing_features}")
@@ -40,3 +43,14 @@ def train_and_evaluate_model(data):
     plt.barh(X.columns, feature_importances)
     plt.title('Feature Importances')
     plt.show()
+
+    # 모델 훈련
+    rf_model = tune_hyperparameters(X_train, y_train)
+    rf_model.fit(X_train, y_train)
+
+    results = {
+        "accuracy": accuracy,
+        "roc_auc": roc_auc,
+        "classification_report": classification_report(y_test, y_pred, output_dict=True)
+    }
+    save_results(results, "model_results.csv")

@@ -1,0 +1,6 @@
+accuracy,roc_auc,classification_report
+1.0,1.0,"{'precision': 1.0, 'recall': 1.0, 'f1-score': 1.0, 'support': 148.0}"
+1.0,1.0,"{'precision': 1.0, 'recall': 1.0, 'f1-score': 1.0, 'support': 69.0}"
+1.0,1.0,1.0
+1.0,1.0,"{'precision': 1.0, 'recall': 1.0, 'f1-score': 1.0, 'support': 217.0}"
+1.0,1.0,"{'precision': 1.0, 'recall': 1.0, 'f1-score': 1.0, 'support': 217.0}"
