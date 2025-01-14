@@ -1,6 +1,4 @@
 import shap
-import matplotlib.pyplot as plt
-
 
 def interpret_shap(model, X_test, target_columns):
     """
@@ -11,5 +9,4 @@ def interpret_shap(model, X_test, target_columns):
         explainer = shap.TreeExplainer(model.estimators_[i])
         shap_values = explainer.shap_values(X_test)
 
-        # Summary Plot
         shap.summary_plot(shap_values, X_test, title=f"SHAP Summary: {target}")

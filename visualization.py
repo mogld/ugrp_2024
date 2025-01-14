@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 
 def visualize_risk_by_life_stage(data, model, selected_features, target_columns):
     """
@@ -22,3 +23,27 @@ def visualize_risk_by_life_stage(data, model, selected_features, target_columns)
         plt.xlabel("Life Stage")
         plt.ylabel("Risk Probability")
         plt.show()
+
+def save_results(results, file_name):
+    """
+    모델 테스트 결과를 CSV 파일로 저장합니다.
+
+    Args:
+        results (list or dict): 저장할 결과 데이터 (모델 이름과 성능 지표들).
+        file_name (str): 저장할 파일 경로.
+
+    Returns:
+        None
+    """
+    # 결과 데이터를 pandas DataFrame으로 변환
+    if isinstance(results, list):
+        results_df = pd.DataFrame(results)
+    elif isinstance(results, dict):
+        results_df = pd.DataFrame([results])
+    else:
+        raise ValueError("Results must be a list or a dictionary.")
+
+    # CSV 파일로 저장
+    results_df.to_csv(file_name, index=False, encoding='utf-8')
+    print(f"Results saved to {file_name}")
+

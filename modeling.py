@@ -5,8 +5,7 @@ from sklearn.metrics import classification_report, roc_auc_score, precision_reca
 from imblearn.over_sampling import SMOTE
 import pandas as pd
 import matplotlib.pyplot as plt
-
-
+import numpy as np
 from imblearn.over_sampling import SMOTE
 
 def validate_data(X, y):
@@ -138,6 +137,75 @@ def train_disease_risk_model(data, selected_features, target_columns):
 
     return rf_model
 
+from sklearn.model_selection import train_test_split
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, roc_auc_score
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+import pandas as pd
 
+def train_multiple_models(data, selected_features, target_columns):
+    """
+    다양한 모델을 학습하고 성능을 비교합니다.
+    """
+    # 데이터 분할
+    X = data[selected_features]
+    y = data[target_columns]
 
+    if X.shape[0] == 0 or y.shape[0] == 0:
+        raise ValueError("데이터 크기가 0입니다. 입력 데이터를 확인하세요.")
 
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    models = {
+        'RandomForest': MultiOutputClassifier(RandomForestClassifier(random_state=42)),
+        'XGBoost': MultiOutputClassifier(XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)),
+        'LightGBM': MultiOutputClassifier(LGBMClassifier(random_state=42))
+    }
+
+    model_results = []
+
+    # 각 모델 학습 및 평가
+    for model_name, model in models.items():
+        print(f"\n{model_name} 모델 학습 중...")
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+
+        report = classification_report(y_test, y_pred, target_names=target_columns, zero_division=0, output_dict=True)
+        auc_scores = []
+        for i, col in enumerate(target_columns):
+            try:
+                auc = roc_auc_score(y_test[col], model.predict_proba(X_test)[i][:, 1])
+                auc_scores.append(auc)
+            except Exception as e:
+                auc_scores.append(None)
+                print(f"{model_name}의 {col} AUC-ROC 계산 중 오류 발생: {e}")
+
+        model_results.append({
+            'Model': model_name,
+            'Classification Report': report,
+            'AUC-ROC Scores': dict(zip(target_columns, auc_scores))
+        })
+
+        print(f"{model_name} 모델 학습 완료")
+
+    # RandomForest를 기본 모델로 반환
+    rf_model = models['RandomForest']
+    return rf_model, model_results
+
+def apply_thresholds(model, X, target_columns, thresholds):
+    """
+    최적의 Threshold를 적용하여 예측 결과를 반환합니다.
+    """
+    predictions = []
+
+    # 각 타겟 변수별로 Threshold 적용
+    for i, col in enumerate(target_columns):
+        # 확률값 예측
+        proba = model.predict_proba(X)[i][:, 1]  # Positive class 확률
+        pred = (proba >= thresholds[col]).astype(int)  # Threshold 적용
+        predictions.append(pred)
+
+    # 예측 결과를 병합하여 반환
+    return np.column_stack(predictions)
