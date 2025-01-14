@@ -18,8 +18,8 @@
 
 ---
 ## 📄 연구 보고서 PDF
-[PCOS 연구 최종 보고서](./PCOS_연구_최종_보고서.pdf)
-<embed src="./PCOS_연구_최종_보고서.pdf" width="100%" height="600px" />
+[PCOS UGRP 결과보고서](./PCOS-ugrp결과보고서.pdf)
+<embed src="./PCOS-ugrp결과보고서.pdf" width="100%" height="600px" />
 
 ---
 
